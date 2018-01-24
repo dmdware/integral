@@ -99,10 +99,10 @@ int main()
 	double rs2[NI];
 	double minI = 0.0f;
 	double maxI = 0.2f;
-	double midI = 0.0785f;
+	double midI = 0.001;
 	double minGM = 0.00000001f;
 	double maxGM = 7.5f;
-	double midGM = (minGM + maxGM) / 2.0f;
+	double midGM = II;	// (minGM + maxGM) / 2.0f;
 	double r21 = SR;
 	double r22;
 	double vs2[NI];
@@ -114,7 +114,7 @@ int main()
 	for (i = 0; i < NI; ++i)
 	{
 		as2[i] = midGM / (r21*r21);
-		vs2[i] = (i==0? pow(2.0f * midGM / (r21*r21), 0.5f) :vs2[i - 1]) + as2[i];
+		vs2[i] = (i==0? pow(2.0f * midGM / (r21), 0.5f) :vs2[i - 1]) + as2[i];
 		r22 = r21 - vs2[i] + r21 * midI;
 		rs2[i] = r21;
 		dr2[i] = rs2[i] - rs[i];
