@@ -189,7 +189,7 @@ double Q(double r, double I)
 
 void tQ()
 {
-
+	return;
 
 	int i = 0;
 	double r = SR;// 0.3f;
@@ -225,7 +225,8 @@ int main()
 	{
 		double k = push(r, II);
 		double j = pull(r, II);
-		double r2 = r - k - j
+		//double r2 = r - k - j
+		double r2 = r - Q2(r, 0.000134f);
 			;
 		printf("t=%d r=%0.19lf->%0.19lf\r\n", i, r, r2);
 		rs[i] = r;
@@ -249,7 +250,7 @@ int main()
 	double rs2[NI];
 	double minI = 0.0f;
 	double maxI = 0.2f;
-	double midI = 0.001;
+	double midI = 0.019;
 	double minGM = 0.00000001f;
 	double maxGM = 7.5f;
 	double midGM = II;	// (minGM + maxGM) / 2.0f;
