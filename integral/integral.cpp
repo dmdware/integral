@@ -74,6 +74,7 @@ double Q2(double r, double I)
 
 	//printf("pull%0.19lf dR%0.19lf\r\n", r, dr);
 
+
 	//i = r;
 	i = 1;
 	//for (i = r; i + dr <= 1; i += dr)
@@ -181,13 +182,14 @@ double Q(double r, double I)
 	return k;
 }
 
-#define NI	33
-#define SR	0.999f//0.1f//0.15f
+#define NI	13
+#define SR	0.2f
 #define II	0.001f
 #define III	II
 
 void tQ()
 {
+
 
 	int i = 0;
 	double r = SR;// 0.3f;
@@ -198,10 +200,12 @@ void tQ()
 	{
 		double k = push(r, III);
 		double j = pull(r, III);
-		double r2 = r - k //- j
+		double r2 = r - k - j
 			;
-		double r22 = r21 - Q2(r, 0.000013f);
-		printf("t=%d    r=%0.19lf    -     %0.19lf       =      %0.19lf\r\n", i, r22, r2, r22-r2);
+#define	I4	0.000159f
+		//double r22 = r21 - Q2(r + 0.00134f, 0.000014f) - 0.00134f;
+		double r22 = r21 - Q2(r - 0.02f, 0.000134f);
+		printf("t=%d    r=%0.19lf   d=%0.19lf -     %0.19lf       =      %0.19lf       %% %0.19lf     d%% %0.19lf \r\n", i, r22,  r22-r21, r2, r22-r2, (r22 - r2)/r2*100.0f, fabs(r22-r21)/(r22-r21)*(r22 - r21)/(r2-r)*100.0f);
 		rs[i] = r;
 		r = r2;
 		r21 = r22;
