@@ -61,13 +61,159 @@ double push(double R, double I)
 	return k;
 }
 
-#define NI	12
 
-#define SR	0.15f
+#define DR2		0.00035f
+#define DR3		0.00001f
+
+double Q2(double r, double I)
+{
+	double dr = DR3;
+	double i;
+	double k = 0;
+
+
+	//printf("pull%0.19lf dR%0.19lf\r\n", r, dr);
+
+	//i = r;
+	i = 1;
+	//for (i = r; i + dr <= 1; i += dr)
+	//if(i + dr <= 1)
+	for (; i - dr >= r; i -= dr)
+	{
+		double q2 = k;// Q(i + dr, I);
+		double mp = q2;// fmax(q2, I);
+		if (i >= 1)
+			mp = I;
+		//double mp = fmax(q2, (i*i)/((i-I)*(i-I)) );
+		//double s = (1 + I);
+		//double mp = (-(1.0f - i) * s + (1.0f - (i-dr)) * s) + q2;
+		double qq = (i - mp);
+		//double qq = - dr + mp;
+		//if (qq <= 0)
+		//return 0;
+		//if (i != qq)
+		{
+			//printf("mp%0.19lf       s%0.19lf      si%0.19lf    q2   %0.19lf       dr/r=%0.19lf\r\n", mp, s, (-(1.0f - i) * s + (1.0f - (i - dr)) * s), q2,    dr/r);
+			//printf("i%0.19lf qq%0.19lf r%0.19lf dr%0.19lf mp%0.19lf\r\n", i, qq, r, dr, mp);
+		}
+		//k += (-1.0f + (i*i) / (qq*qq)) * dr;
+		//k = (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+		k = (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+		//printf("pull%0.19lf dR%0.19lf    i%0.19lf    qq%0.19lf    dd%0.19lf    iq%0.19lf\r\n", i, dr, i, qq, (-1.0f + (i*i) / (qq*qq)) * dr, (i*i) / (qq*qq));
+		//printf("mp->k  = %0.19lf    ->    %0.19lf\r\n", mp, k);
+		//system("pause");
+	}
+
+	//dr = 1 - r;
+
+	//if (dr <= 0.0f)
+	//return k;
+	//return k;
+
+	dr = i - r;
+
+	if (dr <= 0.0f)
+		return k;
+
+	//return k;
+
+	{
+		double q2 = k;// Q(i + dr, I);
+		double mp = fmax(q2, I);
+		if (i >= 1)
+			mp = I;
+		//double mp = fmax(q2, (i*i) / ((i - I)*(i - I)));
+		//double s = (1 + I);
+		//double mp = (-(1.0f - i) * s + (1.0f - (i - dr)) * s) + q2;
+		double qq = (i - mp);
+		//double qq = -dr + mp;
+		//if (qq <= 0)
+		//return 0;
+		//k += (-1.0f + (i*i) / (qq*qq)) * dr;
+		//k = (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+		k = (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+	}
+
+	return k;
+}
+
+double Q(double r, double I)
+{
+	double dr = DR2;
+	double i;
+	double k = 0;
+
+
+	//printf("pull%0.19lf dR%0.19lf\r\n", r, dr);
+
+	i = r;
+	//for (i = r; i + dr <= 1; i += dr)
+	if(i + dr <= 1)
+	{
+		double q2 = Q(i + dr, I);
+		double mp = fmax(q2, I);
+		double qq = (i - mp);
+		//if (qq <= 0)
+			//return 0;
+		//if (i != qq)
+		{
+			//printf("mp%0.19lf\r\n", mp);
+			//printf("i%0.19lf qq%0.19lf r%0.19lf dr%0.19lf mp%0.19lf\r\n", i, qq, r, dr, mp);
+		}
+		k += (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+		//printf("pull%0.19lf dR%0.19lf\r\n", i, dr);
+	}
+
+	dr = 1 - r;
+
+	if (dr <= 0.0f)
+		return k;
+	
+	{
+		double q2 = Q(i + dr, I);
+		double mp = fmax(q2, I);
+		double qq = (i - mp);
+		//if (qq <= 0)
+			//return 0;
+		k += (-1.0f + (i*i) / (qq*qq)) * dr + mp;
+	}
+
+	return k;
+}
+
+#define NI	33
+#define SR	0.999f//0.1f//0.15f
 #define II	0.001f
+#define III	II
+
+void tQ()
+{
+
+	int i = 0;
+	double r = SR;// 0.3f;
+	double rs[NI];
+	double rs2[NI];
+	double r21 = SR;// 0.3f;
+	for (; i < NI; ++i)
+	{
+		double k = push(r, III);
+		double j = pull(r, III);
+		double r2 = r - k //- j
+			;
+		double r22 = r21 - Q2(r, 0.000013f);
+		printf("t=%d    r=%0.19lf    -     %0.19lf       =      %0.19lf\r\n", i, r22, r2, r22-r2);
+		rs[i] = r;
+		r = r2;
+		r21 = r22;
+	}
+	system("pause");
+}
+
 
 int main()
 {
+	tQ();
+
 	int i = 0;
 	double r = SR;
 	double rs[NI];
@@ -130,7 +276,7 @@ int main()
 
 		reset:
 			r21 = SR;
-			vs2[0] = pow(2.0f * midGM / (r21*r21), 0.5f);
+			vs2[0] = pow(2.0f * midGM / (r21), 0.5f);
 		i = -1;
 		printf("reset\r\n");
 		;
