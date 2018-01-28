@@ -354,7 +354,7 @@ void render()
 	double rs2[NI];
 	double minI = 0.0f;
 	double maxI = 0.2f;
-	double midI = (0.0785000026226043701/1.0f);// 0.00000019;
+	double midI = (0.0415000026226043701/1.0f);// 0.00000019;
 	double minGM = 0.0000000000000000000001f;
 	double maxGM = 70.5f;
 	double midGM = (0.0000034402408530694/1.0f);// II;	// (minGM + maxGM) / 2.0f;
