@@ -186,11 +186,11 @@ double Q(double r, double I)
 //#define NI	128
 #define NI	12
 //#define SR	0.9f
-#define II	0.01f
+#define II	(0.001f/1.0f)
 #define III	II
 
 
-#define SR	0.42f
+#define SR	0.15f //0.42f
 
 void tQ()
 {
@@ -303,17 +303,18 @@ void upp(double r0, double *v0, double midI, double midGM, double v2)
 	double v = 0;
 	double a;
 
-	while (r > r0)
+	while (r > r0 && r==r && fabs(r)!=INFINITY)
 	{
 		a = midGM / (r*r);
 		v = v + a;
-		r = r - v - (1 - r) * midI;
+		//r = r - v - (1 - r) * midI;
+		r = r - v + r * midI;
 	}
 
 	*v0 = v;
 
-	*v0 = pow(2.0f * midGM / r0, 0.5f);
-	//*v0 = v2 -(1 - r) * midI;
+	*v0 = pow(2.0f * midGM / (r0*r0), 0.5f);
+	//*v0 = v2 - (1 - r) * midI;
 	//*v0 = 0;
 }
 
@@ -353,10 +354,10 @@ void render()
 	double rs2[NI];
 	double minI = 0.0f;
 	double maxI = 0.2f;
-	double midI = 0.00000019;
+	double midI = (0.0785000026226043701/1.0f);// 0.00000019;
 	double minGM = 0.0000000000000000000001f;
 	double maxGM = 70.5f;
-	double midGM = II;	// (minGM + maxGM) / 2.0f;
+	double midGM = (0.0000034402408530694/1.0f);// II;	// (minGM + maxGM) / 2.0f;
 	double r21 = SR;
 	double r22;
 	double vs2[NI];
@@ -370,8 +371,8 @@ void render()
 	double smin;
 	double smax;
 
-#define CHECK	0.00000000000000001f
-#define CHECK2	0.00000000000000001f
+#define CHECK	0.0000000000000000001f
+#define CHECK2	0.0000000000000000001f
 
 	goto reset;
 	while (true)
@@ -382,11 +383,12 @@ void render()
 			as2[i] = midGM / (r21*r21);
 			vs2[i] = (i == 0 ? (pow(2.0f * midGM / (r21), 0.5f)) : vs2[i - 1]) + as2[i];
 
-			if (i == 0)
-				upp(r21, &vs2[i], midI, midGM, vs[i]);
+			vs2[i] = (i == 0 ? pow(2.0f * midGM / (r21*r21), 0.5f) : vs2[i - 1]) + as2[i];
+			//if (i == 0)
+			//	upp(r21, &vs2[i], midI, midGM, vs[i]);
 			//vs2[i] = (i == 0 ? 0 : vs2[i - 1]) + as2[i];
-			r22 = r21 - vs2[i] - (1 - r21) * midI;
-			//r22 = r21 - vs2[i] + r21 * midI;
+			//r22 = r21 - vs2[i] - (1 - r21) * midI;
+			r22 = r21 - vs2[i] + r21 * midI;
 			rs2[i] = r21;
 			dr2[i] = rs2[i] - rs[i];
 			r21 = r22;
@@ -414,12 +416,15 @@ void render()
 			}
 
 			r21 = SR;
-			upp(r21, &vs2[i], midI, midGM, vs[i]);
+			//upp(r21, &vs2[i], midI, midGM, vs[i]);
+			vs2[0] = ( pow(2.0f * midGM / (r21), 0.5f));
 			i = -1;
 			//printf("reset\r\n");
 			lastmidGM = midGM;
 			;
 		}
+
+		goto done;
 
 	narrow:
 		if (rs2[i - 1] > rs[i - 1] //- 0.00000001f
@@ -476,12 +481,14 @@ advi:
 	printf("%0.19lf - %0.19lf\r\n", lastmidI, midI);
 	if (fabs(lastmidI - midI) < CHECK2)
 	{
+	done:
 		printf("%0.19lf - %0.19lf\r\n", lastmidI, midI);
-		done:
 		draw(rs, rs2, vs, vs2, midI, midGM);
 		system("pause");
 		exit(0);
 	}
+
+	goto done;
 
 	lastmidGM = 0;
 
