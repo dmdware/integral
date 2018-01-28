@@ -308,12 +308,12 @@ void upp(double r0, double *v0, double midI, double midGM, double v2)
 		a = midGM / (r*r);
 		v = v + a;
 		//r = r - v - (1 - r) * midI;
-		r = r - v + r * midI;
+		r = r - v + (1-r) * midI;
 	}
 
 	*v0 = v;
 
-	*v0 = pow(2.0f * midGM / (r0*r0), 0.5f);
+	//*v0 = pow(2.0f * midGM / (r0*r0), 0.5f);
 	//*v0 = v2 - (1 - r) * midI;
 	//*v0 = 0;
 }
@@ -384,11 +384,11 @@ void render()
 			vs2[i] = (i == 0 ? (pow(2.0f * midGM / (r21), 0.5f)) : vs2[i - 1]) + as2[i];
 
 			vs2[i] = (i == 0 ? pow(2.0f * midGM / (r21*r21), 0.5f) : vs2[i - 1]) + as2[i];
-			//if (i == 0)
-			//	upp(r21, &vs2[i], midI, midGM, vs[i]);
+			if (i == 0)
+				upp(r21, &vs2[i], midI, midGM, vs[i]);
 			//vs2[i] = (i == 0 ? 0 : vs2[i - 1]) + as2[i];
 			//r22 = r21 - vs2[i] - (1 - r21) * midI;
-			r22 = r21 - vs2[i] + r21 * midI;
+			r22 = r21 - vs2[i] + (1-r21) * midI;
 			rs2[i] = r21;
 			dr2[i] = rs2[i] - rs[i];
 			r21 = r22;
@@ -417,14 +417,14 @@ void render()
 
 			r21 = SR;
 			//upp(r21, &vs2[i], midI, midGM, vs[i]);
-			vs2[0] = ( pow(2.0f * midGM / (r21), 0.5f));
+			//vs2[0] = ( pow(2.0f * midGM / (r21), 0.5f));
 			i = -1;
 			//printf("reset\r\n");
 			lastmidGM = midGM;
 			;
 		}
 
-		goto done;
+		//goto done;
 
 	narrow:
 		if (rs2[i - 1] > rs[i - 1] //- 0.00000001f
