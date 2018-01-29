@@ -184,13 +184,13 @@ double Q(double r, double I)
 }
 
 //#define NI	128
-#define NI	12
+#define NI	100//1263//12
 //#define SR	0.9f
 #define II	(0.001f/1.0f)
 #define III	II
 
 
-#define SR	0.15f //0.42f
+#define SR	0.6f	//0.15f //0.42f
 
 void tQ()
 {
@@ -225,10 +225,11 @@ void line(double x1, double y1, double x2, double y2, int wx, int wy, int channe
 	int x;
 	int y;
 
-	for (i = skipi; i <= d; i += skn)
+	for (i = 0;//skipi;
+		i <= d; i += skn)
 	{
-		x = x1 + (x2 - x1)*i/d;
-		y = y1 + (y2 - y1)*i/d;
+		x = x1 + (x2 - x1)*i/(1+d);
+		y = y1 + (y2 - y1)*i/(1+d);
 
 		if (x < 0)
 			continue;
@@ -255,7 +256,7 @@ void draw(double *rs, double *rs2, double *vs, double *vs2, double midI, double 
 	double minp = 9999999999999;
 	
 #define WX	640
-#define WY	920
+#define WY	1520
 
 	t.sizex = WX;
 	t.sizey = WY;
@@ -354,7 +355,7 @@ void render()
 	double rs2[NI];
 	double minI = 0.0f;
 	double maxI = 0.2f;
-	double midI = (0.0415000026226043701/1.0f);// 0.00000019;
+	double midI = (0.09120653 /1.0f);// 0.00000019;
 	double minGM = 0.0000000000000000000001f;
 	double maxGM = 70.5f;
 	double midGM = (0.0000034402408530694/1.0f);// II;	// (minGM + maxGM) / 2.0f;
